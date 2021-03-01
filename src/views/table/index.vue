@@ -13,67 +13,98 @@
           {{ scope.$index }}
         </template>
       </el-table-column>
-      <el-table-column label="Title">
+      <el-table-column label="Symbol">
         <template slot-scope="scope">
-          {{ scope.row.title }}
+          {{ scope.row.attributes.symbol }}
         </template>
       </el-table-column>
-      <el-table-column label="Author" width="110" align="center">
+      
+      <el-table-column label="SecurityID" width="110" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
+          <span>{{ scope.row.attributes.securityID }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Pageviews" width="110" align="center">
+
+      <el-table-column label="StrikePrice" width="110" align="center">
         <template slot-scope="scope">
-          {{ scope.row.pageviews }}
+          <span>{{ scope.row.attributes.strikePrice }}</span>
         </template>
       </el-table-column>
-      <el-table-column class-name="status-col" label="Status" width="110" align="center">
+
+      <el-table-column label="LowLimitPrice" width="150" align="center">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag>
+          <span>{{ scope.row.attributes.lowLimitPrice }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="created_at" label="Display_time" width="200">
+
+      <el-table-column label="HighLimitPrice" width="150" align="center">
         <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span>{{ scope.row.display_time }}</span>
+          <span>{{ scope.row.attributes.highLimitPrice }}</span>
         </template>
       </el-table-column>
+
+      <el-table-column label="TradingReferencePrice" width="200" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.attributes.tradingReferencePrice }}</span>
+        </template>
+      </el-table-column>
+
+      
+
+      <el-table-column label="CFICode" width="110" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.attributes.cfiCode }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="ActivationDate" width="200" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.attributes.activationDate }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="LastEligibleTradeDate" width="200" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.attributes.lastEligibleTradeDate }}</span>
+        </template>
+      </el-table-column>
+       
+      
     </el-table>
   </div>
 </template>
 
 <script>
-import { getList } from '@/api/table'
+import { getList } from "@/api/table";
 
 export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        published: 'success',
-        draft: 'gray',
-        deleted: 'danger'
-      }
-      return statusMap[status]
-    }
+        published: "success",
+        draft: "gray",
+        deleted: "danger",
+      };
+      return statusMap[status];
+    },
   },
   data() {
     return {
       list: null,
-      listLoading: true
-    }
+      listLoading: true,
+    };
   },
   created() {
-    this.fetchData()
+    this.fetchData();
   },
   methods: {
     fetchData() {
-      this.listLoading = true
-      getList().then(response => {
-        this.list = response.data.items
-        this.listLoading = false
-      })
-    }
-  }
-}
+      this.listLoading = true;
+      getList().then((response) => {
+        this.list = response;
+        this.listLoading = false;
+      });
+    },
+  },
+};
 </script>

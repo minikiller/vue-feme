@@ -33,9 +33,9 @@ const actions = {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password }).then(response => {
-        // const { data } = response
-        commit('SET_TOKEN', response.access_token)
-        setToken(response.access_token)
+        const { access_token } = response
+        commit('SET_TOKEN', access_token)
+        setToken(access_token)
         resolve()
       }).catch(error => {
         reject(error)
@@ -47,17 +47,17 @@ const actions = {
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
       getInfo(state.token).then(response => {
-        const { data } = response
+        const { attributes } = response
 
-        if (!data) {
+        if (!attributes) {
           return reject('Verification failed, please Login again.')
         }
 
-        const { name, avatar } = data
-
-        commit('SET_NAME', name)
+        const { first_name } = attributes
+        var avatar = 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif'
+        commit('SET_NAME', first_name)
         commit('SET_AVATAR', avatar)
-        resolve(data)
+        resolve(attributes)
       }).catch(error => {
         reject(error)
       })
