@@ -4,6 +4,7 @@
       :data="data"
       :form="form"
       :fields="mapItems"
+      :labelPosition="labelPosition"
       @create="handleCreate"
       @update="handleUpdate"
       @destroy="handleDestroy"
@@ -29,7 +30,7 @@ export default {
       data: [],
 
       form: {},
-
+      labelPosition: "top",
       mapItems: {
         symbol: {
           label: "Symbol",
@@ -45,7 +46,7 @@ export default {
         },
 
         lowLimitPrice: {
-          label: "LowLimitPrice",
+          label: "Low Limit Price",
           length: 11,
           type: "float",
           rules: [{ required: true, message: "can not empty" }],
@@ -72,7 +73,7 @@ export default {
         },
 
         cfiCode: {
-          label: "CFICode",
+          label: "CFI Code",
           length: 11,
           rules: [{ required: true, message: "can not empty" }],
         },

@@ -1,9 +1,7 @@
 <template>
   <div class="crud">
     <div class="crud__ctrl" v-if="actions.includes('create')">
-      <el-button type="primary" @click="create" size="small" icon="el-icon-plus"
-        >create</el-button
-      >
+      <el-button type="primary" @click="create" size="small" icon="el-icon-plus">create</el-button>
     </div>
     <el-table
       :data="data"
@@ -121,6 +119,7 @@
           :label="labels[key]"
           :prop="key"
           :label-width="labelWidth"
+          :label-position="labelPosition"
         >
           <slot v-if="fields[key].slot" :name="fields[key].slot"></slot>
 
@@ -217,7 +216,9 @@ export default {
     size: { default: "large", type: String },
 
     // 表单元素标签的尺寸
-    labelWidth: { default: "100px", type: String },
+    labelWidth: { default: "150px", type: String },
+
+    labelPosition: { default: "top", type: String },
 
     // 表单的显示样式，如果为真，则是行内显示
     inline: { default: false, type: Boolean },
@@ -229,7 +230,7 @@ export default {
     actions: { default: () => ["create", "destroy", "update"], type: Array },
 
     // 是否高亮显示当前行
-    highlightCurrentRow: { default: false, type: Boolean },
+    highlightCurrentRow: { default: true, type: Boolean },
 
     // 表格行样式
     rowStyle: Function,
@@ -298,7 +299,7 @@ export default {
       this.$emit("update", row, index);
     },
     destroy(row, index) {
-      this.$confirm(`Are you confirm to delete?`, "confirm", { type: "warning" })
+      this.$confirm(`Are you confirm to delete`, "confirm", { type: "warning" })
         .then(() => {
           this.$emit("destroy", row, index);
         })
