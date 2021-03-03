@@ -112,6 +112,7 @@
         :model="form"
         :rules="computedRules"
         @keyup.native.13="submit"
+        :label-position="labelPosition"
       >
         <el-form-item
           v-for="(key, index) in Object.keys(labels)"
@@ -119,7 +120,6 @@
           :label="labels[key]"
           :prop="key"
           :label-width="labelWidth"
-          :label-position="labelPosition"
         >
           <slot v-if="fields[key].slot" :name="fields[key].slot"></slot>
 
