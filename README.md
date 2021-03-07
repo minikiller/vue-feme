@@ -78,3 +78,5 @@ For `typescript` version, you can use [vue-typescript-admin-template](https://gi
 ### Heroku deployment - One Click Deploy
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/minikiller/vue-feme)
+
+### travis.yml
