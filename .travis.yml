@@ -1,17 +1,13 @@
 language: node_js
 
 node_js: 15.12.0
-# node_js: 14.15.5
 
-#CI处理过程承载的方式为docker容器
+
 services:
-  - docker
+  - docker #容器方式处理下面过程
 
 notifications:
-  email: false
-
-# script: 
-#   - npm run test
+  email: false   # 不发送email通知
 
 
 # 下面变量以后在写这里，引用规则有问题
@@ -22,6 +18,13 @@ notifications:
 #     - PROUDCT: mclitao
 #     - FORM_REG: index.docker.io       #产品源 docker 仓库
 #     - TO_REG: registry.heroku.com     #部署目标 huerku 部署仓库
+
+
+
+before_script:
+  # 部署前将app提交到目标平台的仓库中herkoku
+  - echo "Debug ---before_script-----number 1----------------------"
+  - curl https://cli-assets.heroku.com/install.sh | sh                         #install heroku
 
 
 
@@ -44,10 +47,6 @@ notifications:
 
   
 #=============CD  部署到Heroku================
-# before_script:
-#   # 部署前将app提交到目标平台的仓库中herkoku
-#   - echo "Debug ---before_script-----number 1----------------------"
-#   - curl https://cli-assets.heroku.com/install.sh | sh                         #install heroku
 
 
 
@@ -105,6 +104,7 @@ notifications:
 sudo: false
 jobs:
   include:
+    # -----------------CI--------------------------------------------------------------------
     - stage: 1 unit tests
       script: 
         - echo one
@@ -115,26 +115,21 @@ jobs:
     - stage: 3 docker build
       script: 
         - echo two
-        - print("Debug --before_install--job----number 1---------------")
         - echo "$DOCKER_PASSWORD" | docker login "$FORM_REG" -u "$DOCKER_USERNAME" --password-stdin
         - docker build -t $APP_IMAGE .
 
-    - stage: 4 push image
+    - stage: 4 push image to docker hub and heroku pass 
       script: 
         - echo two
-        - print("Debug --before_install--to product docker hub-----------------")
         - docker tag $PROUDCT/$APP_IMAGE $FORM_REG/$HEROKU_APP/$APP_IMAGE
         - docker images
         - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
-        - print("Debug --before_install--to product heroku registry-----------------")
+
         - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY $TO_REG
         - docker tag $PROUDCT/$APP_IMAGE $FORM_REG/$HEROKU_APP/$APP_IMAGE
         - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
         
-        # 部署前将app提交到目标平台的仓库中herkoku
-        - echo "Debug ---before_script-----number 1----------------------"
-        - curl https://cli-assets.heroku.com/install.sh | sh                         #install heroku
-
+      # -----------------CD--------------------------------------------------------------------
 #     - stage: 5 deploy to Heroku pass staging
 #       script: skip
 #       deploy: &heroku
