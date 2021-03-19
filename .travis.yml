@@ -53,9 +53,9 @@ before_script:
   - docker pull $PROUDCT/$APP_IMAGE                                          # pull product app imagees
   - curl https://cli-assets.heroku.com/install.sh | sh                       #install heroku
   - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY $TO_REG #login to registry.heroku.com
-  - docker tag $PROUDCT/$APP_IMAGE $TO_REG/$PROUDCT/$APP_IMAGE
+  - docker tag $PROUDCT/$APP_IMAGE $TO_REG/$HEROKU_APP/$APP_IMAGE
   - docker images 
-  - docker push $TO_REG/$PROUDCT/$APP_IMAGE
+  - docker push $TO_REG/$HEROKU_APP/$APP_IMAGE
   
 deploy:
 - provider: script
