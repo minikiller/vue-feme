@@ -24,7 +24,7 @@ notifications:
 before_script:
   # 部署前将app提交到目标平台的仓库中herkoku
   - echo "Debug ---before_script-----number 1----------------------"
-  - curl https://cli-assets.heroku.com/install.sh | sh                         #install heroku
+  # - curl https://cli-assets.heroku.com/install.sh | sh                         #install heroku
 
 
 
@@ -117,10 +117,8 @@ jobs:
         - echo two
         - echo "$DOCKER_PASSWORD" | docker login "$FORM_REG" -u "$DOCKER_USERNAME" --password-stdin
         - docker build -t $APP_IMAGE .
-
-    - stage: 4 push image to docker hub and heroku pass 
-      script: 
-        - echo two
+        - echo "-- push image to docker hub and heroku pass --"
+        
         - docker tag $PROUDCT/$APP_IMAGE $FORM_REG/$HEROKU_APP/$APP_IMAGE
         - docker images
         - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
@@ -130,22 +128,53 @@ jobs:
         - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
         
       # -----------------CD--------------------------------------------------------------------
-#     - stage: 5 deploy to Heroku pass staging
+    - stage: 4 deploy to Heroku pass staging
 #       script: skip
-#       deploy: &heroku
-#         provider: heroku
-#         app: sf-stages-staging
-#         api_key: $HEROKU_AUTH_TOKEN
-#         on: sf-stages-demo
+        script:
+          - echo "Debug --deploy-------------------"
+          - curl https://cli-assets.heroku.com/install.sh | sh                         #install heroku
+          - heroku container:release $APP_IMAGE --app $HEROKU_APP;
+    
+        verbose: true
+        on:
+          branch: main
+        cache:
+          directories:
+            - "$HOME/.m2"
+        # deploy: &heroku
+        #   provider: heroku
+        #   app: $HEROKU_APP
+        #   api_key: $HEROKU_AUTH_TOKEN
+        #   on: sf-stages-demo
 
-#     - stage: 6 test staging
+
+
+        
+
+# deploy:
+# - provider: script
+#   skip_cleanup: true
+# #  script: bash .travis/deploy.sh
+#   script:
+#     echo "Debug --deploy------number 1--------------------------"
+#     heroku container:release $APP_IMAGE --app $HEROKU_APP;
+    
+#   verbose: true
+#   on:
+#     branch: main
+# cache:
+#   directories:
+#   - "$HOME/.m2"
+
+
+#     - stage: 5 test staging
 #       script: 'curl http://sf-stages-staging.herokuapp.com'
 
-#     - stage: 7 deploy to production
+#     - stage: 6 deploy to production
 #       script: /bin/true
 #       deploy:
 #         <<: *heroku
 #         app: sf-stages-production
 
-#     - stage: 8 est production
+#     - stage: 7 test production
 #       script: 'curl http://sf-stages-production.herokuapp.com'
