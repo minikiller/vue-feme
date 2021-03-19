@@ -49,12 +49,13 @@ jobs:
 before_script:
   # 部署前将app提交到目标平台的仓库中herkoku
   - echo "Debug --before_script-----number 1----------------------"
-  - echo "$DOCKER_PASSWORD" | docker login $FORM_REG -u "$DOCKER_USERNAME" --password-stdin # login to docker hub
-  - docker pull ${FORM_REG_PRO}/${APP_IMAGE}  # pull product app imagees
+  #- echo "$DOCKER_PASSWORD" | docker login $FORM_REG -u "$DOCKER_USERNAME" --password-stdin # login to docker hub
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker pull $FORM_REG_PRO/$APP_IMAGE  # pull product app imagees
   - curl https://cli-assets.heroku.com/install.sh | sh  #install heroku
-  - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY ${TO_REG} #login to registry.heroku.com
-  - docker tag ${FORM_REG_PRO}/${APP_IMAGE} ${TO_REG}/${PROUDCT}/${APP_IMAGE}
-  - docker push ${TO_REG}/${PROUDCT}/${APP_IMAGE}
+  - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY $TO_REG #login to registry.heroku.com
+  - docker tag $FORM_REG_PRO/$APP_IMAGE $TO_REG/$PROUDCT/$APP_IMAGE
+  - docker push $TO_REG/$PROUDCT/$APP_IMAGE
   
 deploy:
 - provider: script
@@ -62,7 +63,7 @@ deploy:
 #  script: bash .travis/deploy.sh
   script:
     echo "Debug --deploy------number 1--------------------------"
-    heroku container:release web --app ${HEROKU_APP};
+    heroku container:release web --app $HEROKU_APP;
     
   verbose: true
   on:
