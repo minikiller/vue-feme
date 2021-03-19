@@ -8,8 +8,31 @@ services:
   - docker
 
 # script: 
-  # - npm run test
+#   - npm run test
 
+before_script:
+  - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin   #login to dockerhub
+  - curl https://cli-assets.heroku.com/install.sh | sh  #install heroku
+  - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY registry.heroku.com #login to registry.heroku.com
+
+
+deploy:
+- provider: script
+  skip_cleanup: true
+#  script: bash .travis/deploy.sh
+  script:
+    docker push mclitao/vue-feme:latest;
+    docker push registry.heroku.com/$HEROKU_APP/web;
+    heroku container:release web --app $HEROKU_APP;
+    
+  verbose: true
+  on:
+    branch: main
+cache:
+  directories:
+  - "$HOME/.m2"
+
+  
 
 #CI/CD任务分包，编译、测试、发布等任务。  
 #整个CI工作都会由Travis替你使用它自身的算力网络存储完成工作！！！
