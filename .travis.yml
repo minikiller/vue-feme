@@ -37,14 +37,16 @@ jobs:
     - stage: build docker images and push to registry
       script:
         - print("Debug --task--job----number 1---------------.")
-
-        - print("-------to product docker hub-----------------")
         - echo "$DOCKER_PASSWORD" | docker login "$FORM_REG" -u "$DOCKER_USERNAME" --password-stdin
         - docker build -t $APP_IMAGE .
+
+    - stage: to product docker hub
+        - print("-------to product docker hub-----------------")
         - docker tag $PROUDCT/$APP_IMAGE $FORM_REG/$HEROKU_APP/$APP_IMAGE
         - docker images
         - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
 
+    - stage: to product heroku registry
         - print("-------to product heroku registry-----------------")
         - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY $TO_REG
         - docker tag $PROUDCT/$APP_IMAGE $FORM_REG/$HEROKU_APP/$APP_IMAGE
