@@ -6,8 +6,8 @@ node_js: 10
 services:
   - docker
 
-script: 
-  - npm run test
+# script: 
+  # - npm run test
 
 
 #CI/CD任务分包，编译、测试、发布等任务。  
