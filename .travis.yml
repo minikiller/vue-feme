@@ -29,46 +29,50 @@ notifications:
 #=============CI Docker build to docker Hub===============
 # 使用安装前阶段完成 CI 动作
 
-before_install:
-  - print("Debug --before_install--job----number 1---------------")
-  - echo "$DOCKER_PASSWORD" | docker login "$FORM_REG" -u "$DOCKER_USERNAME" --password-stdin
-  - docker build -t $APP_IMAGE .
-  - print("Debug --before_install--to product docker hub-----------------")
-  - docker tag $PROUDCT/$APP_IMAGE $FORM_REG/$HEROKU_APP/$APP_IMAGE
-  - docker images
-  - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
-  - print("Debug --before_install--to product heroku registry-----------------")
-  - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY $TO_REG
-  - docker tag $PROUDCT/$APP_IMAGE $FORM_REG/$HEROKU_APP/$APP_IMAGE
-  - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
+# before_install:
+#   - print("Debug --before_install--job----number 1---------------")
+#   - echo "$DOCKER_PASSWORD" | docker login "$FORM_REG" -u "$DOCKER_USERNAME" --password-stdin
+#   - docker build -t $APP_IMAGE .
+#   - print("Debug --before_install--to product docker hub-----------------")
+#   - docker tag $PROUDCT/$APP_IMAGE $FORM_REG/$HEROKU_APP/$APP_IMAGE
+#   - docker images
+#   - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
+#   - print("Debug --before_install--to product heroku registry-----------------")
+#   - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY $TO_REG
+#   - docker tag $PROUDCT/$APP_IMAGE $FORM_REG/$HEROKU_APP/$APP_IMAGE
+#   - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
 
   
 #=============CD  部署到Heroku================
-before_script:
-  # 部署前将app提交到目标平台的仓库中herkoku
-  - echo "Debug ---before_script-----number 1----------------------"
-  - curl https://cli-assets.heroku.com/install.sh | sh                         #install heroku
+# before_script:
+#   # 部署前将app提交到目标平台的仓库中herkoku
+#   - echo "Debug ---before_script-----number 1----------------------"
+#   - curl https://cli-assets.heroku.com/install.sh | sh                         #install heroku
+
+
+
   # - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin # login to docker hub
   # - docker pull $PROUDCT/$APP_IMAGE                                          # pull product app imagees
   # - docker tag $PROUDCT/$APP_IMAGE $TO_REG/$HEROKU_APP/$APP_IMAGE
   # - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY $TO_REG #login to registry.heroku.com
   # - docker images 
   # - docker push $TO_REG/$HEROKU_APP/$APP_IMAGE                               # push to registry.heroku.com
-  
-deploy:
-- provider: script
-  skip_cleanup: true
-#  script: bash .travis/deploy.sh
-  script:
-    echo "Debug --deploy------number 1--------------------------"
-    heroku container:release $APP_IMAGE --app $HEROKU_APP;
+
+
+# deploy:
+# - provider: script
+#   skip_cleanup: true
+# #  script: bash .travis/deploy.sh
+#   script:
+#     echo "Debug --deploy------number 1--------------------------"
+#     heroku container:release $APP_IMAGE --app $HEROKU_APP;
     
-  verbose: true
-  on:
-    branch: main
-cache:
-  directories:
-  - "$HOME/.m2"
+#   verbose: true
+#   on:
+#     branch: main
+# cache:
+#   directories:
+#   - "$HOME/.m2"
 
 
 
@@ -97,27 +101,56 @@ cache:
 #         - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
 
 
-# sudo: false
+# =============jobs方式完成CI/CD的动作==================
+sudo: false
+jobs:
+  include:
+    - stage: 1 unit tests
+      script: 
+        - echo one
 
-# jobs:
-#   include:
-#     - stage: unit tests
-#       script: echo one
-#     - stage: unit tests
-#       script: echo two
-#     - stage: deploy to staging
+    - stage: 2 unit tests
+      script: echo two
+
+    - stage: 3 docker build
+      script: 
+        - echo two
+        - print("Debug --before_install--job----number 1---------------")
+        - echo "$DOCKER_PASSWORD" | docker login "$FORM_REG" -u "$DOCKER_USERNAME" --password-stdin
+        - docker build -t $APP_IMAGE .
+
+    - stage: 4 push image
+      script: 
+        - echo two
+        - print("Debug --before_install--to product docker hub-----------------")
+        - docker tag $PROUDCT/$APP_IMAGE $FORM_REG/$HEROKU_APP/$APP_IMAGE
+        - docker images
+        - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
+        - print("Debug --before_install--to product heroku registry-----------------")
+        - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY $TO_REG
+        - docker tag $PROUDCT/$APP_IMAGE $FORM_REG/$HEROKU_APP/$APP_IMAGE
+        - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
+        
+        # 部署前将app提交到目标平台的仓库中herkoku
+        - echo "Debug ---before_script-----number 1----------------------"
+        - curl https://cli-assets.heroku.com/install.sh | sh                         #install heroku
+
+#     - stage: 5 deploy to Heroku pass staging
 #       script: skip
 #       deploy: &heroku
 #         provider: heroku
 #         app: sf-stages-staging
 #         api_key: $HEROKU_AUTH_TOKEN
 #         on: sf-stages-demo
-#     - stage: test staging
+
+#     - stage: 6 test staging
 #       script: 'curl http://sf-stages-staging.herokuapp.com'
-#     - stage: deploy to production
+
+#     - stage: 7 deploy to production
 #       script: /bin/true
 #       deploy:
 #         <<: *heroku
 #         app: sf-stages-production
-#     - stage: test production
+
+#     - stage: 8 est production
 #       script: 'curl http://sf-stages-production.herokuapp.com'
