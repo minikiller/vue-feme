@@ -17,7 +17,6 @@ env:
 
 #=============CI Docker build to docker Hub===============
 
-
 #CI/CD任务分包，编译、测试、发布等任务。  
 #整个CI工作都会由Travis替你使用它自身的算力网络存储完成工作！！！
 jobs:
@@ -32,9 +31,9 @@ jobs:
         - echo "Debug --task--job----number 1---------------."
       #此处铭感信息存放到Travis后台，其它存放此在env。
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        - docker build -t $APP_IMAGE .
-        - docker tag $APP_IMAGE $FORM_REG_PRO/$APP_IMAGE
-        - docker push $FORM_REG_PRO/$APP_IMAGE   # to registry
+        - docker build -t ${APP_IMAGE} .
+        - docker tag ${APP_IMAGE} ${FORM_REG_PRO}/${APP_IMAGE}
+        - docker push ${FORM_REG_PRO}/${APP_IMAGE}   # to registry
 
 
 
@@ -44,11 +43,11 @@ before_script:
   # 部署前将app提交到目标平台的仓库中herkoku
   - echo "Debug --before_script-----number 1----------------------"
   - echo "$DOCKER_PASSWORD" | docker login $FORM_REG -u "$DOCKER_USERNAME" --password-stdin # login to docker hub
-  - docker pull $FORM_REG_PRO/$APP_IMAGE  # pull product app imagees
+  - docker pull ${FORM_REG_PRO}/${APP_IMAGE}  # pull product app imagees
   - curl https://cli-assets.heroku.com/install.sh | sh  #install heroku
-  - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY registry.heroku.com #login to registry.heroku.com
-  - docker tag $FORM_REG_PRO/$APP_IMAGE $TO_REG/$APP_IMAGE
-  - docker push $TO_REG/$APP_IMAGE
+  - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY ${TO_REG} #login to registry.heroku.com
+  - docker tag ${FORM_REG_PRO}/${APP_IMAGE} ${TO_REG}/${APP_IMAGE}
+  - docker push ${TO_REG}/${APP_IMAGE}
 
 deploy:
 - provider: script
@@ -56,7 +55,7 @@ deploy:
 #  script: bash .travis/deploy.sh
   script:
     echo "Debug --deploy------number 1--------------------------"
-    heroku container:release web --app $HEROKU_APP;
+    heroku container:release web --app ${HEROKU_APP};
     
   verbose: true
   on:
