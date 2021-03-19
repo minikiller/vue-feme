@@ -1,5 +1,5 @@
-# FROM node:alpine3.13
-FROM node:14.15.5
+FROM node:alpine3.13
+# FROM node:14.15.5
 #https://github.com/nodejs/docker-node/tree/769695552abd81267f562517b40407c64039e36a/15/alpine3.13
 
 LABEL Maintainer="sunlingfeng & litao"
