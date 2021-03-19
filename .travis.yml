@@ -9,7 +9,11 @@ services:
 
 # script: 
 #   - npm run test
-
+env:
+  - APP_IMAGE: "vue-feme:latest"      #产品镜像名
+  - FORM_REG_PRO: "mclitao"
+  - FORM_REG: "index.docker.io"       #产品源 docker 仓库
+  - TO_REG: "registry.heroku.com"     #部署目标 huerku 部署仓库
 
 #=============CI Docker build to docker Hub===============
 
@@ -20,33 +24,38 @@ jobs:
   include:
     #-----------ci-task----------------------------
     # build
-    - stage: clear docker images
-      script:
-        - docker images
+    # - stage: clear docker images
+    #   script:
+    #     - docker images
     - stage: build docker images and push to registry
       script:
-      #此处账户密码可以放在ENV中或到Travis后台配置一下也可以。
+        - echo "Debug --task--job----number 1---------------."
+      #此处铭感信息存放到Travis后台，其它存放此在env。
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        - docker build -t vue-feme .
-        - docker tag vue-feme:latest mclitao/vue-feme:latest
-        - docker push mclitao/vue-feme:latest
+        - docker build -t $APP_IMAGE .
+        - docker tag $APP_IMAGE $FORM_REG_PRO/$APP_IMAGE
+        - docker push $FORM_REG_PRO/$APP_IMAGE   # to registry
 
 
 
 #=============CD  部署到Heroku=================
 
 before_script:
-  # - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin   #login to dockerhub
+  # 部署前将app提交到目标平台的仓库中herkoku
+  - echo "Debug --before_script-----number 1----------------------"
+  - echo "$DOCKER_PASSWORD" | docker login $FORM_REG -u "$DOCKER_USERNAME" --password-stdin # login to docker hub
+  - docker pull $FORM_REG_PRO/$APP_IMAGE  # pull product app imagees
   - curl https://cli-assets.heroku.com/install.sh | sh  #install heroku
   - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY registry.heroku.com #login to registry.heroku.com
+  - docker tag $FORM_REG_PRO/$APP_IMAGE $TO_REG/$APP_IMAGE
+  - docker push $TO_REG/$APP_IMAGE
 
 deploy:
 - provider: script
   skip_cleanup: true
 #  script: bash .travis/deploy.sh
   script:
-    docker push mclitao/vue-feme:latest;
-    docker push registry.heroku.com/$HEROKU_APP/web;
+    echo "Debug --deploy------number 1--------------------------"
     heroku container:release web --app $HEROKU_APP;
     
   verbose: true
