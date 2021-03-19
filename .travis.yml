@@ -39,8 +39,8 @@ jobs:
       #此处铭感信息存放到Travis后台，其它存放此在env。
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - docker build -t $APP_IMAGE .
-        - docker tag $PROUDCT/$APP_IMAGE $FORM_REG/$PROUDCT/$APP_IMAGE
-        - docker push "$FORM_REG/$PROUDCT/$APP_IMAGE"
+        - docker tag $PROUDCT/$APP_IMAGE $FORM_REG/$HEROKU_APP/$APP_IMAGE
+        - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
 
 
 
@@ -49,10 +49,9 @@ jobs:
 before_script:
   # 部署前将app提交到目标平台的仓库中herkoku
   - echo "Debug --before_script-----number 1----------------------"
-  #- echo "$DOCKER_PASSWORD" | docker login $FORM_REG -u "$DOCKER_USERNAME" --password-stdin # login to docker hub
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-  - docker pull $PROUDCT/$APP_IMAGE  # pull product app imagees
-  - curl https://cli-assets.heroku.com/install.sh | sh  #install heroku
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin # login to docker hub
+  - docker pull $PROUDCT/$APP_IMAGE                                          # pull product app imagees
+  - curl https://cli-assets.heroku.com/install.sh | sh                       #install heroku
   - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY $TO_REG #login to registry.heroku.com
   - docker tag $PROUDCT/$APP_IMAGE $TO_REG/$PROUDCT/$APP_IMAGE
   - docker images 
