@@ -16,11 +16,11 @@ RUN npm install
 COPY . .
 
 # build app for production with minification
-RUN npm run build
+# RUN npm run build
 
 # Run the image as a non-root user
 RUN adduser -D vue-user
 USER vue-user
 
 EXPOSE 8888
-# CMD [ "http-server", "dist" ]
+CMD [ "node", "start" ]
