@@ -12,6 +12,7 @@ services:
 
 
 # 下面变量以后在写这里，引用规则有问题
+# 此处铭感信息存放到Travis后台，其它存放此在env。
 # env:
 #   global:
 #     - APP_IMAGE: vue-feme:latest      #产品镜像名
@@ -36,9 +37,16 @@ jobs:
     - stage: build docker images and push to registry
       script:
         - print("Debug --task--job----number 1---------------.")
-      #此处铭感信息存放到Travis后台，其它存放此在env。
-        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+        - print("-------to product docker hub-----------------")
+        - echo "$DOCKER_PASSWORD" | docker login "$FORM_REG" -u "$DOCKER_USERNAME" --password-stdin
         - docker build -t $APP_IMAGE .
+        - docker tag $PROUDCT/$APP_IMAGE $FORM_REG/$HEROKU_APP/$APP_IMAGE
+        - docker images
+        - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
+
+        - print("-------to product heroku registry-----------------")
+        - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY $TO_REG
         - docker tag $PROUDCT/$APP_IMAGE $FORM_REG/$HEROKU_APP/$APP_IMAGE
         - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
 
@@ -49,13 +57,13 @@ jobs:
 before_script:
   # 部署前将app提交到目标平台的仓库中herkoku
   - echo "Debug --before_script-----number 1----------------------"
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin # login to docker hub
-  - docker pull $PROUDCT/$APP_IMAGE                                          # pull product app imagees
-  - curl https://cli-assets.heroku.com/install.sh | sh                       #install heroku
-  - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY $TO_REG #login to registry.heroku.com
-  - docker tag $PROUDCT/$APP_IMAGE $TO_REG/$HEROKU_APP/$APP_IMAGE
-  - docker images 
-  - docker push $TO_REG/$HEROKU_APP/$APP_IMAGE
+  - curl https://cli-assets.heroku.com/install.sh | sh                         #install heroku
+  # - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin # login to docker hub
+  # - docker pull $PROUDCT/$APP_IMAGE                                          # pull product app imagees
+  # - docker tag $PROUDCT/$APP_IMAGE $TO_REG/$HEROKU_APP/$APP_IMAGE
+  # - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY $TO_REG #login to registry.heroku.com
+  # - docker images 
+  # - docker push $TO_REG/$HEROKU_APP/$APP_IMAGE                               # push to registry.heroku.com
   
 deploy:
 - provider: script
@@ -63,7 +71,7 @@ deploy:
 #  script: bash .travis/deploy.sh
   script:
     echo "Debug --deploy------number 1--------------------------"
-    heroku container:release web --app $HEROKU_APP;
+    heroku container:release $APP_IMAGE --app $HEROKU_APP;
     
   verbose: true
   on:
