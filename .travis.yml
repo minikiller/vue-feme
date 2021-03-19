@@ -7,8 +7,8 @@ node_js: 15.12.0
 services:
   - docker
 
-# notifications:
-#   email: false
+notifications:
+  email: false
 
 # script: 
 #   - npm run test
@@ -26,60 +26,29 @@ services:
 
 
 
-before_install:
-  - stage: build docker images and push to registry
-      script:
-        - print("Debug --task--job----number 1---------------.")
-        - echo "$DOCKER_PASSWORD" | docker login "$FORM_REG" -u "$DOCKER_USERNAME" --password-stdin
-       - docker build -t $APP_IMAGE .
-
-  - stage: to product docker hub
-      script:
-        - print("-------to product docker hub-----------------")
-        - docker tag $PROUDCT/$APP_IMAGE $FORM_REG/$HEROKU_APP/$APP_IMAGE
-        - docker images
-        - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
-
-  - stage: to product heroku registry
-      script:
-        - print("-------to product heroku registry-----------------")
-        - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY $TO_REG
-        - docker tag $PROUDCT/$APP_IMAGE $FORM_REG/$HEROKU_APP/$APP_IMAGE
-        - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
-
-
 #=============CI Docker build to docker Hub===============
+# 使用安装前阶段完成 CI 动作
 
-#CI/CD任务分包，编译、测试、发布等任务。  
-#整个CI工作都会由Travis替你使用它自身的算力网络存储完成工作！！！
-# jobs:
-#   include:
-#     #-----------ci-task----------------------------
-#     - stage: build docker images and push to registry
-#       script:
-#         - print("Debug --task--job----number 1---------------.")
-#         - echo "$DOCKER_PASSWORD" | docker login "$FORM_REG" -u "$DOCKER_USERNAME" --password-stdin
-#         - docker build -t $APP_IMAGE .
+before_install:
+  - print("Debug --before_install--job----number 1---------------.")
+  - echo "$DOCKER_PASSWORD" | docker login "$FORM_REG" -u "$DOCKER_USERNAME" --password-stdin
+  - docker build -t $APP_IMAGE .
+  
+  - print("Debug --before_install--to product docker hub-----------------")
+  - docker tag $PROUDCT/$APP_IMAGE $FORM_REG/$HEROKU_APP/$APP_IMAGE
+  - docker images
+  - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
 
-#     - stage: to product docker hub
-#         - print("-------to product docker hub-----------------")
-#         - docker tag $PROUDCT/$APP_IMAGE $FORM_REG/$HEROKU_APP/$APP_IMAGE
-#         - docker images
-#         - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
-
-#     - stage: to product heroku registry
-#         - print("-------to product heroku registry-----------------")
-#         - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY $TO_REG
-#         - docker tag $PROUDCT/$APP_IMAGE $FORM_REG/$HEROKU_APP/$APP_IMAGE
-#         - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
-
-
-
-
+  - print("Debug --before_install--to product heroku registry-----------------")
+  - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY $TO_REG
+  - docker tag $PROUDCT/$APP_IMAGE $FORM_REG/$HEROKU_APP/$APP_IMAGE
+  - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
+  
+  
 #=============CD  部署到Heroku================
 before_script:
   # 部署前将app提交到目标平台的仓库中herkoku
-  - echo "Debug ---deploy_before_script-----number 1----------------------"
+  - echo "Debug ---before_script-----number 1----------------------"
   - curl https://cli-assets.heroku.com/install.sh | sh                         #install heroku
   # - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin # login to docker hub
   # - docker pull $PROUDCT/$APP_IMAGE                                          # pull product app imagees
@@ -102,4 +71,30 @@ deploy:
 cache:
   directories:
   - "$HOME/.m2"
+
+
+
+
+#JOBS方式 完成 CI/CD任务分包，编译、测试、发布等任务。  
+#整个CI工作都会由Travis替你使用它自身的算力网络存储完成工作！！！
+# jobs:
+#   include:
+#     #-----------ci-task----------------------------
+#     - stage: build docker images and push to registry
+#       script:
+#         - print("Debug --task--job----number 1---------------.")
+#         - echo "$DOCKER_PASSWORD" | docker login "$FORM_REG" -u "$DOCKER_USERNAME" --password-stdin
+#         - docker build -t $APP_IMAGE .
+
+#     - stage: to product docker hub
+#         - print("-------to product docker hub-----------------")
+#         - docker tag $PROUDCT/$APP_IMAGE $FORM_REG/$HEROKU_APP/$APP_IMAGE
+#         - docker images
+#         - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
+
+#     - stage: to product heroku registry
+#         - print("-------to product heroku registry-----------------")
+#         - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY $TO_REG
+#         - docker tag $PROUDCT/$APP_IMAGE $FORM_REG/$HEROKU_APP/$APP_IMAGE
+#         - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
 
