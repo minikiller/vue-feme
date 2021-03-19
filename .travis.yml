@@ -13,7 +13,7 @@ services:
 env:
   global:
     - APP_IMAGE: vue-feme:latest      #产品镜像名
-    # - FORM_REG_PRO: mclitao
+    - FORM_REG_PRO: mclitao
     - FORM_REG: index.docker.io       #产品源 docker 仓库
     - TO_REG: registry.heroku.com     #部署目标 huerku 部署仓库
 
@@ -34,20 +34,20 @@ jobs:
       #此处铭感信息存放到Travis后台，其它存放此在env。
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - docker build -t ${APP_IMAGE} .
-        - docker tag ${APP_IMAGE} ${FORM_REG}/${APP_IMAGE}
-        - docker push ${FORM_REG}/${APP_IMAGE}
+        - docker tag ${APP_IMAGE} ${FORM_REG}/${FORM_REG_PRO}/${APP_IMAGE}
+        - docker push ${FORM_REG}/${FORM_REG_PRO}/${APP_IMAGE}
 #=============CD  部署到Heroku================
 before_script:
   # 部署前将app提交到目标平台的仓库中herkoku
   - echo "Debug --before_script-----number 1----------------------"
-  - echo DOCKER_PASSWORD=$DOCKER_PASSWORD
-  - echo DOCKER_USERNAME=$DOCKER_USERNAMER
-  - echo FORM_REG=$FORM_REG 
+  - print($DOCKER_PASSWORD)
+  - print($DOCKER_USERNAMER)
+  - echo "$FORM_REG" 
   - echo "$DOCKER_PASSWORD" | docker login $FORM_REG -u "$DOCKER_USERNAME" --password-stdin # login to docker hub
   - docker pull ${FORM_REG}/${APP_IMAGE}  # pull product app imagees
   - curl https://cli-assets.heroku.com/install.sh | sh  #install heroku
   - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY ${TO_REG} #login to registry.heroku.com
-  - docker tag ${FORM_REG}/${APP_IMAGE} ${TO_REG}/${APP_IMAGE}
+  - docker tag ${FORM_REG}/${FORM_REG_PRO}/${APP_IMAGE} ${TO_REG}/${APP_IMAGE}
   - docker push ${TO_REG}/${APP_IMAGE}
   
 deploy:
