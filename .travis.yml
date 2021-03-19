@@ -1,5 +1,28 @@
 language: node_js
+
 node_js: 10
-script: npm run test
-notifications:
-  email: false
+
+#CI处理过程承载的方式为docker容器
+services:
+  - docker
+
+script: 
+  - npm run test
+
+
+#CI/CD任务分包，编译、测试、发布等任务。  
+#整个CI工作都会由Travis替你使用它自身的算力网络存储完成工作！！！
+jobs:
+  include:
+    #-----------ci-task----------------------------
+    # build
+    - stage: clear docker images
+      script:
+        - docker images
+    - stage: build docker images and push to registry
+      script:
+      #此处账户密码可以放在ENV中或到Travis后台配置一下也可以。
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        - docker build -t vue-feme .
+        - docker tag vue-feme:latest mclitao/vue-feme:latest
+        - docker push mclitao/vue-feme:latest

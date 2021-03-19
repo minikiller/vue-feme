@@ -1,7 +1,7 @@
-FROM node:lts-alpine
+FROM node:alpine3.13
+#https://github.com/nodejs/docker-node/tree/769695552abd81267f562517b40407c64039e36a/15/alpine3.13
 
-# install simple http server for serving static content
-RUN npm install -g http-server
+LABEL Maintainer="sunlingfeng & litao"
 
 # make the 'app' folder the current working directory
 WORKDIR /app
@@ -19,12 +19,8 @@ COPY . .
 RUN npm run build
 
 # Run the image as a non-root user
-RUN adduser -D myuser
-USER myuser
+RUN adduser -D vue-user
+USER vue-user
 
-EXPOSE 8080
-CMD [ "http-server", "dist" ]
-
-
-
- 
+EXPOSE 8888
+# CMD [ "http-server", "dist" ]
