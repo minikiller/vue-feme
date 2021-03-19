@@ -40,6 +40,9 @@ jobs:
 before_script:
   # 部署前将app提交到目标平台的仓库中herkoku
   - echo "Debug --before_script-----number 1----------------------"
+  - echo DOCKER_PASSWORD=${DOCKER_PASSWORD}
+  - echo DOCKER_USERNAME=${DOCKER_USERNAMER}
+  - echo FORM_REG=${FORM_REG} 
   - echo "$DOCKER_PASSWORD" | docker login $FORM_REG -u "$DOCKER_USERNAME" --password-stdin # login to docker hub
   - docker pull ${FORM_REG_PRO}/${APP_IMAGE}  # pull product app imagees
   - curl https://cli-assets.heroku.com/install.sh | sh  #install heroku
