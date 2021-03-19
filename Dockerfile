@@ -1,4 +1,5 @@
-FROM node:alpine3.13
+# FROM node:alpine3.13
+FROM node:14.15.5
 #https://github.com/nodejs/docker-node/tree/769695552abd81267f562517b40407c64039e36a/15/alpine3.13
 
 LABEL Maintainer="sunlingfeng & litao"
@@ -18,7 +19,7 @@ COPY . .
 # build app for production with minification
 # RUN npm run build
 
-# Run the image as a non-root user
+# Run the image as a non-root user id is 10000
 RUN adduser -D vue-user
 USER vue-user
 

@@ -1,6 +1,7 @@
 language: node_js
 
-node_js: 15
+# node_js: 15
+node_js: 14.15.5
 
 #CI处理过程承载的方式为docker容器
 services:
