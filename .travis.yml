@@ -11,7 +11,7 @@ services:
 #   - npm run test
 
 env:
-  glob:
+  global:
     - APP_IMAGE: vue-feme:latest      #产品镜像名
     - FORM_REG_PRO: mclitao
     - FORM_REG: index.docker.io       #产品源 docker 仓库
