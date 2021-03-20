@@ -2,7 +2,6 @@ language: node_js
 
 node_js: 15.12.0
 
-
 services:
   - docker #容器方式处理下面过程
 
@@ -23,7 +22,6 @@ notifications:
 #JOBS方式 完成 CI/CD任务分包，编译、测试、发布等任务。  
 jobs:
   include:
-    # -----------------CI--------------------------------------------------------------------
     - stage: 1 unit tests
       script: 
         - echo one
@@ -42,15 +40,22 @@ jobs:
         - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
         - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY $TO_REG
         - docker tag $PROUDCT/$APP_IMAGE $FORM_REG/$HEROKU_APP/$APP_IMAGE
-        - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"  
-      # -----------------CD--------------------------------------------------------------------
-    - stage: 4 deploy to Heroku pass staging
-        script:
-          - skip
-          # - echo "Debug --deploy-------------------"
-          # - curl https://cli-assets.heroku.com/install.sh | sh                         #install heroku
-          # - heroku container:release $APP_IMAGE --app $HEROKU_APP;
-        deploy:
-          <<: *heroku
-          app: $HEROKU_APP
-          api_key: HEROKU_AUTH_TOKEN
+        - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
+
+    - stage: 4 deploy to staging
+      script: skip
+      deploy: &heroku
+        provider: heroku
+        app: $HEROKU_APP
+        api_key: $HEROKU_AUTH_TOKEN
+
+    # - stage: 4 deploy to Heroku pass staging
+    #     script:
+    #       - skip
+    #       # - echo "Debug --deploy-------------------"
+    #       # - curl https://cli-assets.heroku.com/install.sh | sh                         #install heroku
+    #       # - heroku container:release $APP_IMAGE --app $HEROKU_APP;
+    #     deploy:
+    #       <<: *heroku
+    #       app: $HEROKU_APP
+    #       api_key: $HEROKU_AUTH_TOKEN
