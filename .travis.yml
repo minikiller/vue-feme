@@ -23,27 +23,26 @@ notifications:
 jobs:
   include:
     - stage: 1 unit tests
-      script: 
-        - echo one
+      script: skip
 
     - stage: 2 unit tests
-      script: echo two
+      script: skip
 
     - stage: 3 docker build
       script: 
-        - echo two
+        - echo three
         - echo "$DOCKER_PASSWORD" | docker login "$FORM_REG" -u "$DOCKER_USERNAME" --password-stdin
         - docker build -t $APP_IMAGE .
         - echo "-- push image to docker hub and heroku pass --"
         - docker tag $APP_IMAGE $FORM_REG/$HEROKU_APP/$APP_IMAGE
+        - docker tag $APP_IMAGE $TO_REG/$HEROKU_APP/$APP_IMAGE
         - docker images
         - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
         - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY $TO_REG
-        - docker tag $APP_IMAGE $FORM_REG/$HEROKU_APP/$APP_IMAGE
-        - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
+        - docker push "$TO_REG/$HEROKU_APP/$APP_IMAGE"
 
     - stage: 4 deploy to staging
-      script: skip
+      script: skip 
       deploy: &heroku
         provider: heroku
         app: $HEROKU_APP
