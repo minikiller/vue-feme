@@ -25,8 +25,9 @@ jobs:
     - stage: 1 unit tests
       script: skip
 
-    - stage: 2 unit tests
+    - stage: 2 Code quality inspection
       script: skip
+      #https://docs.travis-ci.com/user/sonarcloud/
 
     - stage: 3 docker build to registry(docker hub and heroku registry)
       script: 
@@ -37,11 +38,11 @@ jobs:
         - docker tag $APP_IMAGE $FORM_REG/$PROUDCT/$APP_IMAGE
         - docker tag $APP_IMAGE $TO_REG/$HEROKU_APP/$APP_IMAGE
         - docker images
-        - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
+        - docker push "$FORM_REG/$PROUDCT/$APP_IMAGE"
         - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY $TO_REG
         - docker push "$TO_REG/$HEROKU_APP/$APP_IMAGE"
         # 注意：上述docker build to push流程不要拆分到不同的stage中。
-        
+
     - stage: 4 deploy to staging
       script: skip 
       deploy: &heroku
@@ -59,3 +60,10 @@ jobs:
     #       <<: *heroku
     #       app: $HEROKU_APP
     #       api_key: $HEROKU_AUTH_TOKEN
+
+    - stage: 5 Test Coverage
+      script: skip 
+      #使用codeclimate平台覆盖目标测试
+      #https://docs.codeclimate.com/docs/travis-ci-test-coverage
+      #https://codeclimate.com
+      #https://codeclimate.com/partners/travisci
