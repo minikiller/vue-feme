@@ -3,6 +3,7 @@ language: node_js
 node_js: 15.12.0
 
 services:
+  #https://docs.travis-ci.com/user/docker/#Pushing-a-Docker-Image-to-a-Registry
   - docker #容器方式处理下面过程
 
 notifications:
@@ -29,10 +30,12 @@ jobs:
       script: skip
 
     - stage: 2 Code quality inspection
-      script: skip
       #https://docs.travis-ci.com/user/sonarcloud/
+      script: skip
+      
 
     - stage: 3 docker build to registry(docker hub and heroku registry)
+      #https://devcenter.heroku.com/articles/build-docker-images-heroku-yml
       script: 
         - echo three
         - echo "$DOCKER_PASSWORD" | docker login "$FORM_REG" -u "$DOCKER_USERNAME" --password-stdin
@@ -41,17 +44,21 @@ jobs:
         - docker tag $APP_IMAGE $FORM_REG/$PROUDCT/$APP_IMAGE
         - docker tag $APP_IMAGE $TO_REG/$HEROKU_APP/$APP_IMAGE
         - docker images
-        # - docker push $FORM_REG/$PROUDCT/$APP_IMAGE
-        - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY $TO_REG
+        # - docker push $FORM_REG/$PROUDCT/$APP_IMAGE  重复的会导致提交失败么？
+        - echo "$HEROKU_API_KEY" | docker login "$TO_REG" -u "$HEROKU_LOGIN" --password-stdin
+        # - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY $TO_REG
         - docker push $TO_REG/$HEROKU_APP/$APP_IMAGE
         # 注意：上述docker build to push流程不要拆分到不同的stage中。
 
     - stage: 4 deploy to staging
-      script: skip 
+      #https://devcenter.heroku.com/articles/container-registry-and-runtime
+      #https://devcenter.heroku.com/categories/deploying-with-docker
+      # script: skip 
       deploy: &heroku
         provider: heroku
         app: $HEROKU_APP
         api_key: $HEROKU_AUTH_TOKEN
+        
 
     # - stage: 4 deploy to Heroku pass staging
     #     script:
