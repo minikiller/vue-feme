@@ -13,11 +13,11 @@ notifications:
 # 此处铭感信息存放到Travis后台，其它存放此在env。
 # env:
 #   global:
-#     - APP_IMAGE: vue-feme:latest      #产品镜像名
-#     - PROUDCT: mclitao                #docker hub 产品类
 #     - FORM_REG: index.docker.io       #产品源 docker 仓库
-#     - TO_REG: registry.heroku.com     #部署目标 huerku 部署仓库
 #     - DOCKER_USERNAME: mclitao
+#     - PROUDCT: mclitao                #docker hub 产品类
+#     - APP_IMAGE: vue-feme:latest      #产品镜像名
+#     - TO_REG: registry.heroku.com     #部署目标 huerku 部署仓库
 #     - HEROKU_LOGIN: litao1170995926@gmail.com
 #     - HEROKU_APP: vue-feme-dev
 
@@ -41,9 +41,9 @@ jobs:
         - docker tag $APP_IMAGE $FORM_REG/$PROUDCT/$APP_IMAGE
         - docker tag $APP_IMAGE $TO_REG/$HEROKU_APP/$APP_IMAGE
         - docker images
-        - docker push "$FORM_REG/$PROUDCT/$APP_IMAGE"
+        - docker push $FORM_REG/$PROUDCT/$APP_IMAGE
         - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY $TO_REG
-        - docker push "$TO_REG/$HEROKU_APP/$APP_IMAGE"
+        - docker push $TO_REG/$HEROKU_APP/$APP_IMAGE
         # 注意：上述docker build to push流程不要拆分到不同的stage中。
 
     - stage: 4 deploy to staging
