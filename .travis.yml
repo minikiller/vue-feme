@@ -42,51 +42,15 @@ jobs:
         - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
         - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY $TO_REG
         - docker tag $PROUDCT/$APP_IMAGE $FORM_REG/$HEROKU_APP/$APP_IMAGE
-        - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"
-        
+        - docker push "$FORM_REG/$HEROKU_APP/$APP_IMAGE"  
       # -----------------CD--------------------------------------------------------------------
     - stage: 4 deploy to Heroku pass staging
-#       script: skip
         script:
-          - echo "Debug --deploy-------------------"
-          - curl https://cli-assets.heroku.com/install.sh | sh                         #install heroku
-          - heroku container:release $APP_IMAGE --app $HEROKU_APP;
-    
-        verbose: true
-        on:
-          branch: main
-        cache:
-          directories:
-            - "$HOME/.m2"
-        # deploy: &heroku
-        #   provider: heroku
-        #   app: $HEROKU_APP
-        #   api_key: $HEROKU_AUTH_TOKEN
-        #   on: sf-stages-demo
-# deploy:
-# - provider: script
-#   skip_cleanup: true
-# #  script: bash .travis/deploy.sh
-#   script:
-#     echo "Debug --deploy------number 1--------------------------"
-#     heroku container:release $APP_IMAGE --app $HEROKU_APP;
-    
-#   verbose: true
-#   on:
-#     branch: main
-# cache:
-#   directories:
-#   - "$HOME/.m2"
-
-
-#     - stage: 5 test staging
-#       script: 'curl http://sf-stages-staging.herokuapp.com'
-
-#     - stage: 6 deploy to production
-#       script: /bin/true
-#       deploy:
-#         <<: *heroku
-#         app: sf-stages-production
-
-#     - stage: 7 test production
-#       script: 'curl http://sf-stages-production.herokuapp.com'
+          - skip
+          # - echo "Debug --deploy-------------------"
+          # - curl https://cli-assets.heroku.com/install.sh | sh                         #install heroku
+          # - heroku container:release $APP_IMAGE --app $HEROKU_APP;
+        deploy:
+          <<: *heroku
+          app: $HEROKU_APP
+          api_key: HEROKU_AUTH_TOKEN
