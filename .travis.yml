@@ -38,10 +38,10 @@ jobs:
         - echo "$DOCKER_PASSWORD" | docker login "$FORM_REG" -u "$DOCKER_USERNAME" --password-stdin
         - docker build -t $APP_IMAGE .
         - echo "-- push image to docker hub and heroku pass --"
-        - docker tag $APP_IMAGE $FORM_REG/$PROUDCT/$APP_IMAGE
+        - docker tag $APP_IMAGE $PROUDCT/$APP_IMAGE
         - docker tag $APP_IMAGE $TO_REG/$HEROKU_APP/$APP_IMAGE
         - docker images
-        - docker push $FORM_REG/$PROUDCT/$APP_IMAGE
+        - docker push $PROUDCT/$APP_IMAGE
         - docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY $TO_REG
         - docker push $TO_REG/$HEROKU_APP/$APP_IMAGE
         # 注意：上述docker build to push流程不要拆分到不同的stage中。
